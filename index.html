@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>Penguin Wars — Antarctic Territory Conquest</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===================== MAIN MENU ===================== -->
+  <section id="menu-screen" class="screen">
+    <div class="aurora-strip" aria-hidden="true"></div>
+    <div class="menu-panel">
+      <h1 class="title">
+        <span class="title-emoji" aria-hidden="true">🐧</span>
+        PENGUIN&nbsp;WARS
+      </h1>
+      <p class="subtitle">last colony standing wins the ice</p>
+
+      <div class="level-select" id="level-select" role="group" aria-label="Choose a level"></div>
+      <p class="level-blurb" id="level-blurb">&nbsp;</p>
+
+      <button id="start-btn" class="primary-btn">Found Your Colony ▶</button>
+
+      <div class="menu-footer">
+        <button id="sound-toggle" class="text-btn" aria-pressed="true">🔊 Sound on</button>
+        <button id="reset-progress-btn" class="text-btn">Reset progress</button>
+        <span class="hint">Drag to select territories · click a target to send your flock</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <section id="game-screen" class="screen hidden">
+
+    <div id="blizzard-banner" class="hidden">❄ BLIZZARD — flocks are slowed ❄</div>
+
+    <header id="hud-top">
+      <div class="hud-stat">
+        <span class="hud-icon" aria-hidden="true">🏔️</span>
+        <span id="stat-territories">0</span>/<span id="stat-territories-total">0</span>
+      </div>
+      <div class="hud-stat">
+        <span class="hud-icon" aria-hidden="true">🐧</span>
+        <span id="stat-population">0</span>
+      </div>
+      <div class="hud-spacer"></div>
+      <div class="stopwatch-display" aria-label="Level timer">
+        <span class="hud-icon" aria-hidden="true">⏱</span>
+        <span id="stat-time">0:00.0</span>
+      </div>
+      <button id="mute-btn" class="icon-btn" aria-label="Toggle sound">🔊</button>
+      <button id="pause-btn" class="icon-btn" aria-label="Pause">⏸</button>
+    </header>
+
+    <div id="canvas-wrap">
+      <canvas id="game-canvas"></canvas>
+      <aside id="leaderboard">
+        <h2>Colonies</h2>
+        <ul id="leaderboard-list"></ul>
+      </aside>
+    </div>
+
+    <footer id="hud-bottom">
+      <span class="send-label">Send</span>
+      <div class="option-row" id="opt-send-percent">
+        <button class="opt-btn small" data-value="25">25%</button>
+        <button class="opt-btn small active" data-value="50">50%</button>
+        <button class="opt-btn small" data-value="75">75%</button>
+        <button class="opt-btn small" data-value="100">All</button>
+      </div>
+      <span class="hud-divider" aria-hidden="true"></span>
+      <span class="send-label">Upgrade</span>
+      <div class="option-row">
+        <button class="opt-btn small upgrade-btn" id="upgrade-production-btn" title="Spend penguins for faster production (G)">▲ Prod</button>
+        <button class="opt-btn small upgrade-btn" id="upgrade-storage-btn" title="Spend penguins for a higher population cap (S)">📦 Cap</button>
+        <button class="opt-btn small upgrade-btn" id="upgrade-defense-btn" title="Spend penguins to boost defense (D)">🛡 Def</button>
+        <button class="opt-btn small upgrade-btn" id="upgrade-speed-btn" title="Spend penguins for faster flocks from here (R)">🚀 Spd</button>
+      </div>
+      <span class="hint">Drag-select your colonies, then click a target territory</span>
+    </footer>
+
+    <div id="pause-overlay" class="overlay hidden">
+      <div class="overlay-panel">
+        <h2>PAUSED</h2>
+        <button id="resume-btn" class="primary-btn">Resume</button>
+        <button id="quit-btn" class="text-btn">Quit to menu</button>
+      </div>
+    </div>
+
+    <div id="gameover-overlay" class="overlay hidden">
+      <div class="overlay-panel">
+        <h2 id="gameover-title">VICTORY!</h2>
+        <p id="gameover-subtitle">Your colony rules Antarctica.</p>
+        <ul id="gameover-stats"></ul>
+        <button id="next-level-btn" class="primary-btn hidden">Next Level ▶</button>
+        <button id="play-again-btn" class="primary-btn">Play Again</button>
+        <button id="menu-btn" class="text-btn">Main menu</button>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/territory.js"></script>
+<script src="js/flock.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

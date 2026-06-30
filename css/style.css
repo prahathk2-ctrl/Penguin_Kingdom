@@ -1,0 +1,512 @@
+/* =======================================================
+   PENGUIN WARS — retro 8-bit Antarctic strategy game
+   Design tokens
+   ------------------------------------------------------
+   Color:
+     --polar-night   #0b1320  page background / void
+     --ice-deep      #122a44  panel fill
+     --ice-mid       #1c4366  panel border / divider
+     --ice-blue      #5ec8f0  primary accent / player color
+     --snow          #f1f7fb  primary text
+     --aurora-green  #52ffb5
+     --aurora-violet #b07bff
+     --crimson-foe   #ff5d6c  danger / enemy accent
+     --crystal-gold  #ffd166  highlight / selected
+   Type:
+     display: "Press Start 2P"  (chunky pixel face, used sparingly)
+     body/utility: "VT323"      (tall pixel monospace, readable at small size)
+   Signature element:
+     Chunky "NES dialog box" panel (hard 3px border + stepped offset
+     shadow, zero border-radius) used everywhere — menu, HUD, overlays —
+     plus a drifting aurora-gradient strip behind the title.
+   ======================================================= */
+
+:root{
+  --polar-night:   #0b1320;
+  --ice-deep:      #122a44;
+  --ice-mid:       #1c4366;
+  --ice-blue:      #5ec8f0;
+  --snow:          #f1f7fb;
+  --aurora-green:  #52ffb5;
+  --aurora-violet: #b07bff;
+  --crimson-foe:   #ff5d6c;
+  --crystal-gold:  #ffd166;
+
+  --font-display: "Press Start 2P", monospace;
+  --font-body: "VT323", monospace;
+
+  --pixel-border: 3px solid var(--ice-mid);
+  --pixel-shadow: 5px 5px 0 #00000080;
+}
+
+*{ box-sizing: border-box; }
+
+html, body{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--polar-night);
+  color: var(--snow);
+  font-family: var(--font-body);
+  overflow: hidden;
+  -webkit-font-smoothing: none;
+  image-rendering: pixelated;
+}
+
+#app{ width: 100%; height: 100%; position: relative; }
+
+.screen{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.screen.hidden{ display: none; }
+
+button{
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+button:focus-visible, a:focus-visible{
+  outline: 3px solid var(--crystal-gold);
+  outline-offset: 2px;
+}
+.hidden{ display: none !important; }
+
+/* ---------- shared "NES dialog box" panel ---------- */
+.panel-box{
+  background: var(--ice-deep);
+  border: var(--pixel-border);
+  box-shadow: var(--pixel-shadow);
+}
+
+/* ===================== MENU SCREEN ===================== */
+#menu-screen{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 110%, #0e2840 0%, var(--polar-night) 60%);
+}
+
+.aurora-strip{
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 38%;
+  background: repeating-linear-gradient(
+    100deg,
+    transparent 0 40px,
+    rgba(82,255,181,0.10) 40px 80px,
+    transparent 80px 130px,
+    rgba(176,123,255,0.12) 130px 190px,
+    transparent 190px 260px,
+    rgba(94,200,240,0.08) 260px 320px
+  );
+  background-size: 220% 100%;
+  animation: aurora-drift 18s linear infinite;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black, transparent);
+}
+@keyframes aurora-drift{
+  0%{ background-position: 0% 0; }
+  100%{ background-position: -220% 0; }
+}
+@media (prefers-reduced-motion: reduce){
+  .aurora-strip{ animation: none; }
+}
+
+.menu-panel{
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  width: 92vw;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 28px 32px 24px;
+  background: var(--ice-deep);
+  border: var(--pixel-border);
+  box-shadow: var(--pixel-shadow);
+}
+
+.title{
+  font-family: var(--font-display);
+  font-size: clamp(20px, 4.4vw, 34px);
+  text-align: center;
+  color: var(--snow);
+  text-shadow: 3px 3px 0 var(--ice-mid), 0 0 18px rgba(94,200,240,0.5);
+  margin: 4px 0 6px;
+  letter-spacing: 1px;
+}
+.title-emoji{ display: inline-block; transform: translateY(2px); }
+
+.subtitle{
+  text-align: center;
+  font-size: 20px;
+  color: var(--ice-blue);
+  margin: 0 0 22px;
+}
+
+.menu-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+  margin-bottom: 20px;
+}
+.option-group{ min-width: 0; }
+.option-label{
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--crystal-gold);
+  margin: 0 0 8px;
+  letter-spacing: 0.5px;
+}
+.option-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ---------- level select grid ---------- */
+.level-select{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 7px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding: 6px;
+  background: rgba(0,0,0,0.15);
+  border: 2px solid var(--ice-mid);
+}
+.level-card{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 8px 4px;
+  background: var(--polar-night);
+  color: var(--snow);
+  border: 2px solid var(--ice-mid);
+  box-shadow: 2px 2px 0 #00000060;
+  font-family: var(--font-body);
+  text-align: center;
+}
+.level-card .level-num{
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--ice-blue);
+}
+.level-card .level-sub{
+  font-size: 13px;
+  line-height: 1;
+  color: var(--crystal-gold);
+  min-height: 1em;
+}
+.level-card.locked .level-sub{ font-size: 15px; }
+.level-card:hover:not(.locked){ border-color: var(--ice-blue); }
+.level-card:active:not(.locked){ transform: translate(2px,2px); box-shadow: none; }
+.level-card.active{
+  background: var(--ice-blue);
+  color: var(--polar-night);
+  border-color: var(--snow);
+}
+.level-card.active .level-num{ color: var(--polar-night); }
+.level-card.active .level-sub{ color: var(--polar-night); }
+.level-card.completed:not(.active){ border-color: var(--aurora-green); }
+.level-card.completed:not(.active) .level-sub{ color: var(--aurora-green); }
+.level-card.locked{
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.level-blurb{
+  min-height: 2.6em;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--ice-blue);
+  margin: 0 0 16px;
+}
+.level-blurb strong{ color: var(--crystal-gold); }
+
+.opt-btn{
+  background: var(--polar-night);
+  color: var(--snow);
+  border: 2px solid var(--ice-mid);
+  padding: 8px 10px;
+  font-size: 16px;
+  font-family: var(--font-body);
+  box-shadow: 3px 3px 0 #00000060;
+  transition: transform .05s ease;
+}
+.opt-btn.small{ padding: 6px 10px; font-size: 15px; }
+.opt-btn:hover{ border-color: var(--ice-blue); }
+.opt-btn:active{ transform: translate(2px,2px); box-shadow: 1px 1px 0 #00000060; }
+.opt-btn.active{
+  background: var(--ice-blue);
+  color: var(--polar-night);
+  border-color: var(--snow);
+}
+
+.stepper{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.step-btn{
+  width: 38px; height: 38px;
+  background: var(--polar-night);
+  color: var(--snow);
+  border: 2px solid var(--ice-mid);
+  font-size: 20px;
+  box-shadow: 3px 3px 0 #00000060;
+}
+.step-btn:active{ transform: translate(2px,2px); box-shadow: none; }
+.step-value{
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--aurora-green);
+  min-width: 28px;
+  text-align: center;
+}
+
+.primary-btn{
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 14px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--polar-night);
+  background: var(--aurora-green);
+  border: 3px solid var(--snow);
+  box-shadow: 5px 5px 0 #00000080;
+  letter-spacing: 1px;
+}
+.primary-btn:hover{ filter: brightness(1.08); }
+.primary-btn:active{ transform: translate(3px,3px); box-shadow: none; }
+
+.menu-footer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+.text-btn{
+  background: none;
+  border: none;
+  color: var(--ice-blue);
+  font-size: 16px;
+  text-decoration: underline dotted;
+  padding: 4px;
+}
+.hint{
+  font-size: 14px;
+  color: #7fa3c4;
+}
+
+/* ===================== GAME SCREEN ===================== */
+#game-screen{
+  display: flex;
+  flex-direction: column;
+  background: var(--polar-night);
+}
+
+#blizzard-banner{
+  position: absolute;
+  top: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  background: var(--ice-deep);
+  border: 2px solid var(--ice-blue);
+  box-shadow: 4px 4px 0 #00000080;
+  color: var(--snow);
+  padding: 6px 16px;
+  font-size: 16px;
+  letter-spacing: .5px;
+}
+#blizzard-banner.hidden{ display:none; }
+
+#hud-top{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 14px;
+  background: var(--ice-deep);
+  border-bottom: var(--pixel-border);
+  flex: 0 0 auto;
+  z-index: 4;
+}
+.hud-stat{
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--snow);
+}
+.hud-icon{ font-size: 16px; }
+.hud-spacer{ flex: 1; }
+.icon-btn{
+  background: var(--polar-night);
+  color: var(--snow);
+  border: 2px solid var(--ice-mid);
+  font-size: 16px;
+  width: 36px; height: 32px;
+  box-shadow: 2px 2px 0 #00000060;
+}
+.icon-btn:active{ transform: translate(2px,2px); box-shadow: none; }
+
+#canvas-wrap{
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+#game-canvas{
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+#leaderboard{
+  width: 188px;
+  flex: 0 0 auto;
+  background: var(--ice-deep);
+  border-left: var(--pixel-border);
+  padding: 10px 10px;
+  overflow-y: auto;
+}
+#leaderboard h2{
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--crystal-gold);
+  margin: 2px 0 10px;
+}
+#leaderboard-list{
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#leaderboard-list li{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  padding: 3px 4px;
+  border: 1px solid transparent;
+}
+#leaderboard-list li.is-you{
+  border-color: var(--ice-blue);
+  background: rgba(94,200,240,0.08);
+}
+#leaderboard-list li.is-dead{ opacity: 0.35; text-decoration: line-through; }
+.dot{
+  width: 11px; height: 11px;
+  flex: 0 0 auto;
+  border: 1px solid #00000080;
+}
+.lb-name{ flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-count{ font-family: var(--font-display); font-size: 11px; color: var(--snow); }
+
+@media (max-width: 760px){
+  #leaderboard{ display: none; }
+}
+
+#hud-bottom{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: var(--ice-deep);
+  border-top: var(--pixel-border);
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+.send-label{ font-size: 17px; color: var(--ice-blue); }
+#opt-send-percent{ gap: 5px; }
+#hud-bottom .hint{ margin-left: auto; }
+.hud-divider{
+  width: 1px;
+  height: 22px;
+  background: var(--ice-mid);
+  flex: 0 0 auto;
+}
+.upgrade-btn{ white-space: nowrap; font-size: 14px; padding: 6px 8px; }
+.upgrade-btn:disabled{
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.upgrade-btn:disabled:hover{ border-color: var(--ice-mid); }
+
+.stopwatch-display{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--aurora-green);
+  background: #04130d;
+  border: 2px solid var(--ice-mid);
+  padding: 6px 10px;
+  letter-spacing: 1px;
+  box-shadow: inset 0 0 0 1px #000000, 2px 2px 0 #00000060;
+}
+.stopwatch-display .hud-icon{ font-size: 13px; }
+@media (max-width: 600px){
+  .stopwatch-display{ font-size: 11px; padding: 5px 7px; }
+}
+
+@media (max-width: 600px){
+  #hud-bottom .hint{ display: none; }
+  .hud-stat{ font-size: 16px; }
+}
+
+/* ---------- overlays (pause / game over) ---------- */
+.overlay{
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5,10,18,0.78);
+}
+.overlay.hidden{ display: none; }
+.overlay-panel{
+  background: var(--ice-deep);
+  border: var(--pixel-border);
+  box-shadow: var(--pixel-shadow);
+  padding: 26px 34px;
+  text-align: center;
+  min-width: 280px;
+  max-width: 90vw;
+}
+.overlay-panel h2{
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--aurora-green);
+  margin: 0 0 14px;
+}
+#gameover-title.is-defeat{ color: var(--crimson-foe); }
+#gameover-subtitle{ font-size: 18px; color: var(--snow); margin: 0 0 16px; }
+#gameover-stats{
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  font-size: 16px;
+  color: #bcd6ea;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.overlay-panel .primary-btn{ margin-bottom: 10px; }
