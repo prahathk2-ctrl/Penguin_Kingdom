@@ -5,22 +5,6 @@ a penguin colony, expand across icy territories, and wipe out every rival
 colony before they wipe you out — all in a chunky retro 8-bit pixel-art
 style. No build step, no installs: it's plain HTML/CSS/JS.
 
-## Run it
-
-Just open `index.html` in a browser. That's it.
-
-For the smoothest experience (and to avoid any browser quirks with local
-files), you can optionally serve it instead of double-clicking it:
-
-```bash
-cd penguin-wars
-python3 -m http.server 8000
-# then open http://localhost:8000
-```
-
-In VS Code, the **Live Server** extension also works great — right-click
-`index.html` → "Open with Live Server".
-
 ## The campaign
 
 There's no map/difficulty menu — instead there are **50 levels**, generated
@@ -130,23 +114,6 @@ Scripts are loaded as plain `<script src="...">` tags (no bundler, no ES
 modules) so the project runs by just opening the HTML file — everything
 shares one global `PW` namespace object.
 
-## What's included vs. simplified from the original brief
-
-This focuses on a tight, fully working core loop rather than every system
-in the original wishlist:
-
-- ✅ Real-time territory conquest, continuous penguin production, an
-  8-level campaign with escalating AI count/skill/map size, a two-track
-  upgrade system (production, storage, defense & speed), dynamic weather (blizzards), retro
-  pixel-art rendering, chiptune SFX, full menu/HUD/pause/game-over flow,
-  saved campaign progress.
-- ✂️ Simplified out for scope: the full building system (Fishing
-  Village/Ice Fortress/Research Igloo/etc. as separate structures), the
-  full resource set (fish/crystals/snow/energy — upgrades just cost
-  penguins directly), named unit types, the tech tree, and diplomacy/
-  alliances (this is single-player vs. AI only). Territory *size*
-  (Outpost/Village/City) plus the new growth/defense upgrade tracks stand
-  in for the building-tier system.
 
 ## Testing
 
@@ -166,4 +133,3 @@ Run it with:
 ```bash
 node test/headless_test.js
 ```
-# Penguin_Kingdom
